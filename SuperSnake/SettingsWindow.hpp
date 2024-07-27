@@ -9,11 +9,7 @@ public:
 
 	std::function<void()> startCallback;
 
-	Size fieldSize() const { return m_fieldSize; }
-
-	int snakeCount() const { return m_selectedControllers.size(); }
-
-	const Array<GameController>& selectedControllers() const { return m_selectedControllers; }
+	const GameSettings& settings() const { return m_settings; }
 
 	void setVisible(bool v) { m_visible = v; }
 
@@ -25,9 +21,7 @@ private:
 
 	bool m_visible = false;
 
-	Size m_fieldSize = { 10, 10 };
-
-	Array<GameController> m_selectedControllers{ 4, GameController{.kind = GameController::Kind::Unselected } };
+	GameSettings m_settings;
 
 	std::map<GameController, std::string> m_controllerList;
 

@@ -53,11 +53,10 @@ void SettingsWindow::renderWindow()
 				if (ImGui::Button(Unicode::ToUTF8(presettingsName).data()))
 				{
 					m_presetName = Unicode::ToUTF8(presettingsName);
-					m_fieldSize = presettings.fieldSize;
-					m_selectedControllers = presettings.selectedControllers;
+					m_settings = presettings;
 
 					auto gamepads = System::EnumerateGamepads();
-					for (auto& controller : m_selectedControllers)
+					for (auto& controller : m_settings.selectedControllers)
 					{
 						if (controller.kind == GameController::Kind::Gamepad)
 						{
@@ -102,7 +101,7 @@ void SettingsWindow::renderWindow()
 			ImGui::BeginDisabled(isPresetNameEmpty);
 			if ((ImGui::Button("Save Preset") || returnPressed) && !isPresetNameEmpty)
 			{
-				presets[Unicode::FromUTF8(m_presetName)] = GameSettings{ .fieldSize = m_fieldSize, .selectedControllers = m_selectedControllers };
+				presets[Unicode::FromUTF8(m_presetName)] = m_settings;
 				presetsModified = true;
 			}
 			ImGui::EndDisabled();
@@ -119,13 +118,13 @@ void SettingsWindow::renderWindow()
 		ImGui::BulletText("Field");
 		ImGui::Indent();
 		{
-			if (ImGui::InputInt("width", &m_fieldSize.x))
+			if (ImGui::InputInt("width", &m_settings.fieldSize.x))
 			{
-				m_fieldSize.x = Max(m_fieldSize.x, 2);
+				m_settings.fieldSize.x = Max(m_settings.fieldSize.x, 2);
 			}
-			if (ImGui::InputInt("height", &m_fieldSize.y))
+			if (ImGui::InputInt("height", &m_settings.fieldSize.y))
 			{
-				m_fieldSize.y = Max(m_fieldSize.y, 2);
+				m_settings.fieldSize.y = Max(m_settings.fieldSize.y, 2);
 			}
 		}
 		ImGui::Unindent();
@@ -133,11 +132,11 @@ void SettingsWindow::renderWindow()
 		ImGui::BulletText("Snake");
 		ImGui::Indent();
 		{
-			int count = snakeCount();
+			int count = m_settings.selectedControllers.size();
 			if (ImGui::InputInt("count", &count))
 			{
 				count = Clamp(count, 1, 4);
-				m_selectedControllers.resize(count, GameController{ .kind = GameController::Kind::Unselected });
+				m_settings.selectedControllers.resize(count, GameController{ .kind = GameController::Kind::Unselected });
 			}
 		}
 		ImGui::Unindent();
@@ -145,9 +144,9 @@ void SettingsWindow::renderWindow()
 		ImGui::BulletText("Controllers");
 		ImGui::Indent();
 		{
-			for (int i : Iota(snakeCount()))
+			for (int i : Iota(m_settings.selectedControllers.size()))
 			{
-				auto& controller = m_selectedControllers[i];
+				auto& controller = m_settings.selectedControllers[i];
 				ImGui::Text("%d:", i);
 				ImGui::SameLine();
 				ImGui::PushID(i);
@@ -200,7 +199,7 @@ void SettingsWindow::renderWindow()
 
 		ImGui::Separator();
 
-		ImGui::BeginDisabled(m_selectedControllers.includes_if([](const GameController c) {
+		ImGui::BeginDisabled(m_settings.selectedControllers.includes_if([](const GameController c) {
 			return c.kind == GameController::Kind::Unselected;
 			}));
 		{

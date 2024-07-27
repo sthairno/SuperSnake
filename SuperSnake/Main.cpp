@@ -28,13 +28,15 @@ public:
 
 	App()
 	{
-		m_settings.startCallback = [this] { gameStart(); };
-		m_settings.setVisible(true);
+		m_settingsWindow.startCallback = [this] {
+			gameStart(m_settingsWindow.settings());
+		};
+		m_settingsWindow.setVisible(true);
 	}
 
 	void update()
 	{
-		m_settings.renderWindow();
+		m_settingsWindow.renderWindow();
 		if (not m_game || m_game->isGameOver())
 		{
 			m_footerText = U"";
@@ -258,7 +260,9 @@ private:
 
 	std::unique_ptr<SuperSnake::Game> m_game;
 
-	SettingsWindow m_settings;
+	GameSettings m_settings;
+
+	SettingsWindow m_settingsWindow;
 
 	Stopwatch m_nextStw;
 
@@ -300,7 +304,7 @@ private:
 		const auto& snake = m_game->snakes()[id];
 		const auto& action = m_actions[id];
 		const ColorF frameColor = SnakeColors[id].lerp(Palette::Black, 0.1);
-		const auto& controller = m_settings.selectedControllers()[id];
+		const auto& controller = m_settings.selectedControllers[id];
 		const auto& controllerState = *m_indexedControllerStates[id];
 
 		rect.rounded(PlayerStateBoxRound)
@@ -454,12 +458,13 @@ private:
 		m_font(str).draw(Arg::leftCenter = rect.leftCenter() + Vec2{ rectSize + 4, 0 }, Palette::White);
 	}
 
-	void gameStart()
+	void gameStart(GameSettings settings)
 	{
+		m_settings = settings;
 		m_game = std::make_unique<SuperSnake::Game>(
-			m_settings.fieldSize(),
+			m_settings.fieldSize,
 			m_settings.snakeCount(),
-			m_settings.selectedControllers().map([](const GameController c) -> Optional<String> {
+			m_settings.selectedControllers.map([](const GameController c) -> Optional<String> {
 				switch (c.kind)
 				{
 				case GameController::Kind::Keyboard: return U"Keyboard";
@@ -471,7 +476,7 @@ private:
 
 		m_controllerStates.clear();
 		m_indexedControllerStates.fill(nullptr);
-		for (const auto [idx, controller] : Indexed(m_settings.selectedControllers()))
+		for (const auto [idx, controller] : Indexed(m_settings.selectedControllers))
 		{
 			if (controller.kind == GameController::Kind::Keyboard ||
 				controller.kind == GameController::Kind::Gamepad)
@@ -538,7 +543,7 @@ private:
 		}
 		m_nextStw.restart();
 		m_actions.fill(SuperSnake::SnakeAction::Stay);
-		for (auto [idx, controller] : Indexed(m_settings.selectedControllers()))
+		for (auto [idx, controller] : Indexed(m_settings.selectedControllers))
 		{
 			if (controller.kind == GameController::Kind::Solver &&
 				m_game->snakes()[idx].state == SuperSnake::SnakeState::Alive)

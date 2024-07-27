@@ -6,7 +6,12 @@ struct GameSettings
 {
 	Size fieldSize = { 10, 10 };
 
-	Array<GameController> selectedControllers;
+	Array<GameController> selectedControllers{ 4, GameController::Unselected() };
+
+	size_t snakeCount() const
+	{
+		return selectedControllers.size();
+	}
 };
 
 template<class Archive>
