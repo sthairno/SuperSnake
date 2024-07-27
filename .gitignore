@@ -402,3 +402,4 @@ FodyWeavers.xsd
 Intermediate
 **/App/AS_DEBUG
 *.exe
+imgui.ini
