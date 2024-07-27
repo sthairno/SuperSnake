@@ -119,6 +119,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Config.cpp" />
+    <ClCompile Include="imgui_impl_s3d\DearImGuiAddon.cpp" />
     <ClCompile Include="imgui_impl_s3d\imgui_impl_s3d.cpp" />
     <ClCompile Include="KeyConfigWindow.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -320,6 +321,8 @@
   <ItemGroup>
     <ClInclude Include="Config.hpp" />
     <ClInclude Include="GameController.hpp" />
+    <ClInclude Include="imgui_impl_s3d\DearImGuiAddon.hpp" />
+    <ClInclude Include="imgui_impl_s3d\imgui_impl_s3d.h" />
     <ClInclude Include="KeyConfigWindow.hpp" />
     <ClInclude Include="SettingsWindow.hpp" />
     <ClInclude Include="Solver.hpp" />

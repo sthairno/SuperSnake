@@ -132,6 +132,9 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="imgui_impl_s3d\DearImGuiAddon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="imgui_impl_s3d\imgui_impl_s3d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -786,6 +789,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="KeyConfigWindow.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_impl_s3d\DearImGuiAddon.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_impl_s3d\imgui_impl_s3d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

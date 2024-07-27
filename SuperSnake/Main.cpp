@@ -1,5 +1,5 @@
 ﻿#include <Siv3D.hpp> // OpenSiv3D v0.6.15
-#include "imgui.h"
+#include <imgui.h>
 #include "imgui_impl_s3d/imgui_impl_s3d.h"
 #include "SuperSnake.hpp"
 #include "Config.hpp"
