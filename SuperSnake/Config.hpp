@@ -1,8 +1,11 @@
 ﻿#pragma once
 #include "Solver.hpp"
 #include "SolverV1.hpp"
+#include "GameController.hpp"
+#include "KeyConfig.hpp"
+#include "GameSettings.hpp"
 
-const String ConfigPath = U"./config.bin";
+constexpr StringView ConfigPath = U"./config.bin";
 
 constexpr ColorF DefaultCellColor = Palette::White;
 constexpr ColorF ConflictCellColor = ColorF{ 0.7 };
@@ -23,42 +26,13 @@ constexpr std::array<std::pair<const char32_t*, SolverGenerator>, 1> Solvers{
 	std::pair<const char32_t*, SolverGenerator>{U"SolverV1", CreateSolverV1}
 };
 
-struct KeyConfig
-{
-	uint8 selectButtonId = 0;
-
-	uint8 cancelButtonId = 1;
-
-	uint8 leftButtonId = 2;
-
-	uint8 rightButtonId = 7;
-
-	// even -> +, odd -> -
-
-	uint8 stickXaxisId = 1;
-
-	uint8 stickYaxisId = 2;
-
-	double stickDeadzone = 0.5;
-};
-
-template<class Archive>
-void SIV3D_SERIALIZE(Archive& archive, KeyConfig& config)
-{
-	archive(
-		cereal::make_nvp("selectButtonId", config.selectButtonId),
-		cereal::make_nvp("cancelButtonId", config.cancelButtonId),
-		cereal::make_nvp("leftButtonId", config.leftButtonId),
-		cereal::make_nvp("rightButtonId", config.rightButtonId),
-		cereal::make_nvp("leftButtonId", config.leftButtonId),
-		cereal::make_nvp("stickXaxisId", config.stickXaxisId),
-		cereal::make_nvp("stickDeadzone", config.stickDeadzone)
-	);
-}
-
 KeyConfig GetKeyConfig(const GamepadInfo& info);
 
 void SetKeyConfig(const GamepadInfo& info, KeyConfig config);
+
+const HashTable<String, GameSettings>& GetGamePresets();
+
+void SetGamePresets(const HashTable<String, GameSettings>& presets);
 
 void LoadConfig();
 

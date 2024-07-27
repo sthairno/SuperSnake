@@ -797,5 +797,11 @@
     <ClInclude Include="imgui_impl_s3d\imgui_impl_s3d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GameSettings.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyConfig.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

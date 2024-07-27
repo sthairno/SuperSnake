@@ -1,0 +1,9 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "supersnake",
+  "version-string": "1.0.0",
+  "dependencies": [
+    "imgui"
+  ],
+  "builtin-baseline": "576379156e82da642f8d1834220876759f13534d"
+}

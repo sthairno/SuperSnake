@@ -403,3 +403,5 @@ Intermediate
 **/App/AS_DEBUG
 *.exe
 imgui.ini
+config.bin
+**/vcpkg_installed

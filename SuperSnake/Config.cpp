@@ -2,20 +2,26 @@
 #include <ThirdParty/cereal/types/map.hpp>
 
 static std::map<uint64, KeyConfig> keyConfig;
-
-uint64 calcId(const GamepadInfo& info)
-{
-	return info.productID | uint64(info.vendorID) << 32;
-}
+static HashTable<String, GameSettings> gamePresets;
 
 KeyConfig GetKeyConfig(const GamepadInfo& info)
 {
-	return keyConfig[calcId(info)];
+	return keyConfig[GameController::FromGamepadInfo(info).gamepadUid];
 }
 
 void SetKeyConfig(const GamepadInfo& info, KeyConfig config)
 {
-	keyConfig[calcId(info)] = config;
+	keyConfig[GameController::FromGamepadInfo(info).gamepadUid] = config;
+}
+
+const HashTable<String, GameSettings>& GetGamePresets()
+{
+	return gamePresets;
+}
+
+void SetGamePresets(const HashTable<String, GameSettings>& presets)
+{
+	gamePresets = presets;
 }
 
 void LoadConfig()
@@ -25,7 +31,7 @@ void LoadConfig()
 	{
 		try
 		{
-			archive(CEREAL_NVP(keyConfig));
+			archive(CEREAL_NVP(keyConfig), CEREAL_NVP(gamePresets));
 		}
 		catch (cereal::Exception)
 		{ }
@@ -39,7 +45,7 @@ void SaveConfig()
 	{
 		try
 		{
-			archive(CEREAL_NVP(keyConfig));
+			archive(CEREAL_NVP(keyConfig), CEREAL_NVP(gamePresets));
 		}
 		catch (cereal::Exception)
 		{ }

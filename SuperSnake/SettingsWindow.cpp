@@ -1,5 +1,6 @@
 ﻿#include "SettingsWindow.hpp"
 #include <imgui.h>
+#include <imgui_stdlib.h>
 
 void SettingsWindow::renderWindow()
 {
@@ -22,9 +23,10 @@ void SettingsWindow::renderWindow()
 	}
 	for (auto& gamepad : System::EnumerateGamepads())
 	{
+		auto controller = GameController::FromGamepadInfo(gamepad);
 		m_controllerList.emplace(
-			GameController{ .kind = GameController::Kind::Gamepad, .index = gamepad.playerIndex },
-			fmt::format("Gamepad: {}##{}", gamepad.name.toUTF8(), gamepad.vendorID ^ gamepad.productID)
+			controller,
+			fmt::format("Gamepad: {}##{}", gamepad.name.toUTF8(), controller.gamepadUid)
 		);
 	}
 
@@ -35,6 +37,85 @@ void SettingsWindow::renderWindow()
 		ImGuiWindowFlags_::ImGuiWindowFlags_NoMove |
 		ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse);
 	{
+		ImGui::SeparatorText("Preset");
+
+		auto presets = GetGamePresets();
+		bool presetsModified = false;
+		if (presets.empty())
+		{
+			ImGui::TextDisabled("No presets");
+		}
+		else
+		{
+			for (auto itr = presets.begin(); itr != presets.end(); itr++)
+			{
+				auto& [presettingsName, presettings] = *itr;
+				if (ImGui::Button(Unicode::ToUTF8(presettingsName).data()))
+				{
+					m_presetName = Unicode::ToUTF8(presettingsName);
+					m_fieldSize = presettings.fieldSize;
+					m_selectedControllers = presettings.selectedControllers;
+
+					auto gamepads = System::EnumerateGamepads();
+					for (auto& controller : m_selectedControllers)
+					{
+						if (controller.kind == GameController::Kind::Gamepad)
+						{
+							auto itr = std::find_if(gamepads.cbegin(), gamepads.cend(), [&](const GamepadInfo& info) {
+								return GameController::FromGamepadInfo(info).gamepadUid == controller.gamepadUid;
+							});
+
+							if (itr == gamepads.end())
+							{
+								controller = GameController::Unselected();
+							}
+							else
+							{
+								controller.index = itr->playerIndex;
+							}
+						}
+						else if (controller.kind == GameController::Kind::Solver)
+						{
+							if (controller.index >= Solvers.size())
+							{
+								controller = GameController::Unselected();
+							}
+						}
+					}
+				}
+				else if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+				{
+					presets.erase(itr);
+					presetsModified = true;
+				}
+
+				ImGui::SameLine();
+			}
+			ImGui::Dummy({ 0, 0 });
+		}
+
+		{
+			bool returnPressed = ImGui::InputTextWithHint("##SaveAsPreset", "Preset Name", &m_presetName, ImGuiInputTextFlags_EnterReturnsTrue);
+			bool isPresetNameEmpty = m_presetName.empty();
+
+			ImGui::SameLine();
+			ImGui::BeginDisabled(isPresetNameEmpty);
+			if ((ImGui::Button("Save Preset") || returnPressed) && !isPresetNameEmpty)
+			{
+				presets[Unicode::FromUTF8(m_presetName)] = GameSettings{ .fieldSize = m_fieldSize, .selectedControllers = m_selectedControllers };
+				presetsModified = true;
+			}
+			ImGui::EndDisabled();
+		}
+
+		if (presetsModified)
+		{
+			SetGamePresets(presets);
+			SaveConfig();
+		}
+
+		ImGui::SeparatorText("Config");
+
 		ImGui::BulletText("Field");
 		ImGui::Indent();
 		{
@@ -52,10 +133,11 @@ void SettingsWindow::renderWindow()
 		ImGui::BulletText("Snake");
 		ImGui::Indent();
 		{
-			if (ImGui::InputInt("count", &m_snakeCount))
+			int count = snakeCount();
+			if (ImGui::InputInt("count", &count))
 			{
-				m_snakeCount = Clamp(m_snakeCount, 1, 4);
-				m_selectedControllers.resize(m_snakeCount, GameController{ .kind = GameController::Kind::Unselected });
+				count = Clamp(count, 1, 4);
+				m_selectedControllers.resize(count, GameController{ .kind = GameController::Kind::Unselected });
 			}
 		}
 		ImGui::Unindent();
@@ -63,7 +145,7 @@ void SettingsWindow::renderWindow()
 		ImGui::BulletText("Controllers");
 		ImGui::Indent();
 		{
-			for (int i : Iota(m_snakeCount))
+			for (int i : Iota(snakeCount()))
 			{
 				auto& controller = m_selectedControllers[i];
 				ImGui::Text("%d:", i);
@@ -116,11 +198,13 @@ void SettingsWindow::renderWindow()
 		}
 		ImGui::Unindent();
 
+		ImGui::Separator();
+
 		ImGui::BeginDisabled(m_selectedControllers.includes_if([](const GameController c) {
 			return c.kind == GameController::Kind::Unselected;
 			}));
 		{
-			if (ImGui::Button("Start"))
+			if (ImGui::Button("Start!", { 70, 30 }))
 			{
 				m_visible = false;
 				if (startCallback)

@@ -11,7 +11,7 @@ public:
 
 	Size fieldSize() const { return m_fieldSize; }
 
-	int snakeCount() const { return m_snakeCount; }
+	int snakeCount() const { return m_selectedControllers.size(); }
 
 	const Array<GameController>& selectedControllers() const { return m_selectedControllers; }
 
@@ -27,13 +27,13 @@ private:
 
 	Size m_fieldSize = { 10, 10 };
 
-	int m_snakeCount = 4;
-
-	Array<GameController> m_selectedControllers{ static_cast<size_t>(m_snakeCount), GameController{.kind = GameController::Kind::Unselected } };
+	Array<GameController> m_selectedControllers{ 4, GameController{.kind = GameController::Kind::Unselected } };
 
 	std::map<GameController, std::string> m_controllerList;
 
 	std::list<KeyConfigWindow> m_keyConfigWindows;
+
+	std::string m_presetName;
 
 	void renderControllerPicker(GameController& controller);
 };

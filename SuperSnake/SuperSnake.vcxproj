@@ -62,6 +62,9 @@
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnabled>true</VcpkgEnabled>
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+    <VcpkgUseMD>false</VcpkgUseMD>
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -321,8 +324,10 @@
   <ItemGroup>
     <ClInclude Include="Config.hpp" />
     <ClInclude Include="GameController.hpp" />
+    <ClInclude Include="GameSettings.hpp" />
     <ClInclude Include="imgui_impl_s3d\DearImGuiAddon.hpp" />
     <ClInclude Include="imgui_impl_s3d\imgui_impl_s3d.h" />
+    <ClInclude Include="KeyConfig.hpp" />
     <ClInclude Include="KeyConfigWindow.hpp" />
     <ClInclude Include="SettingsWindow.hpp" />
     <ClInclude Include="Solver.hpp" />
