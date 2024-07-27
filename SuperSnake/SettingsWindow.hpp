@@ -29,7 +29,7 @@ private:
 
 	int m_snakeCount = 4;
 
-	Array<GameController> m_selectedControllers{ m_snakeCount, GameController{.kind = GameController::Kind::Unselected } };
+	Array<GameController> m_selectedControllers{ static_cast<size_t>(m_snakeCount), GameController{.kind = GameController::Kind::Unselected } };
 
 	std::map<GameController, std::string> m_controllerList;
 
