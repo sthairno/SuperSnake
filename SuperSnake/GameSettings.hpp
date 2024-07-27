@@ -8,6 +8,8 @@ struct GameSettings
 
 	Array<GameController> selectedControllers{ 4, GameController::Unselected() };
 
+	bool hideConfirmedAction = false;
+
 	size_t snakeCount() const
 	{
 		return selectedControllers.size();
@@ -19,6 +21,7 @@ static void SIV3D_SERIALIZE(Archive& archive, GameSettings& settings)
 {
 	archive(
 		cereal::make_nvp("fieldSize", settings.fieldSize),
-		cereal::make_nvp("selectedControllers", settings.selectedControllers)
+		cereal::make_nvp("selectedControllers", settings.selectedControllers),
+		cereal::make_nvp("hideConfirmedAction", settings.hideConfirmedAction)
 	);
 }

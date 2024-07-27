@@ -27,6 +27,7 @@ class App
 public:
 
 	App()
+		: m_confirmedIcon{ {Icon::Type::MaterialDesign, 0xf05e0 }, 100 }
 	{
 		m_settingsWindow.startCallback = [this] {
 			gameStart(m_settingsWindow.settings());
@@ -49,7 +50,7 @@ public:
 				[this, id = 0](const std::shared_ptr<ControllerState>& state) mutable {
 				return
 					m_game->snakes()[id++].state == SuperSnake::SnakeState::Dead ||
-					state->isDone;
+					state->isConfirmed;
 			}))
 			{
 				if (m_nextStw.elapsed() > 1s)
@@ -121,7 +122,7 @@ public:
 							try
 							{
 								m_actions[snakeId] = result->future.get();
-								m_indexedControllerStates[snakeId]->isDone = true;
+								m_indexedControllerStates[snakeId]->isConfirmed = true;
 							}
 							catch (std::exception ex)
 							{
@@ -145,7 +146,7 @@ public:
 				const int snakeId = state->idList[state->targetIdx];
 				auto& snake = m_game->snakes()[snakeId];
 
-				if (not state->isDone && pov)
+				if (not state->isConfirmed && pov)
 				{
 					auto direction = static_cast<SuperSnake::Direction>(*pov);
 					for (int i : Range(-1, 1))
@@ -168,7 +169,7 @@ public:
 								m_actions[id] != SuperSnake::SnakeAction::Stay;
 						}))
 				{
-					state->isDone = !state->isDone;
+					state->isConfirmed = !state->isConfirmed;
 				}
 			}
 		}
@@ -254,6 +255,8 @@ private:
 
 	Font m_font{ 24 };
 
+	Texture m_confirmedIcon;
+
 	String m_stateText;
 
 	String m_footerText;
@@ -292,7 +295,7 @@ private:
 
 		int targetIdx;
 
-		bool isDone;
+		bool isConfirmed;
 	};
 
 	std::vector<std::shared_ptr<ControllerState>> m_controllerStates;
@@ -313,7 +316,7 @@ private:
 		m_font(snake.name)
 			.draw(Arg::topCenter = rect.topCenter(), Palette::Black);
 
-		if (not controllerState.isDone && snake.state == SuperSnake::SnakeState::Alive)
+		if (not controllerState.isConfirmed && snake.state == SuperSnake::SnakeState::Alive)
 		{
 			const auto selectedId = controllerState.idList[controllerState.targetIdx];
 			if (selectedId == id)
@@ -336,6 +339,12 @@ private:
 			if (action == SuperSnake::SnakeAction::Stay)
 			{
 				RectF(Arg::center = contentRect.center(), contentSize * 0.8, contentSize * 0.14).draw(Palette::Lightslategray);
+			}
+			else if (m_settings.hideConfirmedAction && controllerState.isConfirmed)
+			{
+				m_confirmedIcon
+					.scaled(contentSize / Max(m_confirmedIcon.width(), m_confirmedIcon.height()))
+					.drawAt(contentRect.center(), ActionConfirmedColor);
 			}
 			else
 			{
@@ -539,7 +548,7 @@ private:
 	{
 		for (auto& state : m_controllerStates)
 		{
-			state->isDone = false;
+			state->isConfirmed = false;
 		}
 		m_nextStw.restart();
 		m_actions.fill(SuperSnake::SnakeAction::Stay);

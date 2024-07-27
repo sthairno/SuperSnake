@@ -30,12 +30,12 @@ void SettingsWindow::renderWindow()
 		);
 	}
 
-	ImGui::SetNextWindowSize({ 400, 280 });
 	ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 	ImGui::Begin("Settings", nullptr,
 		ImGuiWindowFlags_::ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_::ImGuiWindowFlags_NoMove |
-		ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse);
+		ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse |
+		ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysAutoResize);
 	{
 		ImGui::SeparatorText("Preset");
 
@@ -194,6 +194,13 @@ void SettingsWindow::renderWindow()
 				}
 				ImGui::PopID();
 			}
+		}
+		ImGui::Unindent();
+
+		ImGui::BulletText("Options");
+		ImGui::Indent();
+		{
+			ImGui::Checkbox("Hide Confirmed Action", &m_settings.hideConfirmedAction);
 		}
 		ImGui::Unindent();
 

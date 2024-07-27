@@ -18,6 +18,7 @@ constexpr std::array<ColorF, 4> SnakeColors{
 	Color(0xFD, 0x9A, 0x28), // #FD9A28
 };
 constexpr ColorF DeadSnakeColor = ColorF{ 0.5 };
+constexpr ColorF ActionConfirmedColor = Color{ 0x60, 0xD6, 0x66 }; // #60D666
 constexpr SizeF PlayerStateBoxSize = { 220, 160 };
 constexpr double PlayerStateBoxRound = 6;
 constexpr double PlayerStateBoxThickness = 4;
